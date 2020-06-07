@@ -11,45 +11,75 @@ class _TimeAndDateWidgetState extends State<TimeAndDateWidget> {
   bool isVisible = false;
   bool isExpanded = false;
 
-  DateTime pickedDate;
+  bool isStartSelected = false;
+  bool isEndSelected = false;
+
+  DateTime pickedStartDate;
+  DateTime pickedEndDate;
+
+  String _frequency = 'Never';
+  List<String> frequencies = ['Never', 'Every day', 'Every week', 'Every 2 weeks', 'Every month', 'Every year'];
 
   @override
   void initState() {
     super.initState();
-    pickedDate = DateTime.now();
+    pickedStartDate = DateTime.now();
+    pickedEndDate = DateTime.now();
   }
 
-  pickDate() async {
+  pickDate(bool isStart) async {
     DateTime date = await showDatePicker(
       context: context,
       firstDate: DateTime(DateTime.now().year-5),
       lastDate: DateTime(DateTime.now().year+5),
-      initialDate: pickedDate
+      initialDate: DateTime.now()
     );
 
     if(date != null) {
       setState(() {
-        pickedDate = date;
+        if(isStart) {
+          pickedStartDate = date;
+          isStartSelected = true;
+        } else {
+          pickedEndDate = date;
+          isEndSelected = true;
+        }
       });
     }
   }
 
   Widget _buildStart() {
     return Visibility(
-      child: RaisedButton(
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Starts*',
-              style: TextStyle(color: Color.fromRGBO(117, 117, 141, 1), fontSize: 16)
-            ),
-            pickedDate != null ? Text('${pickedDate.year} ${pickedDate.month} ${pickedDate.day}') : Text('Select')
-          ],
+      child: GestureDetector(
+        onTap: () { pickDate(true); },
+        child: Container(
+          margin:EdgeInsets.fromLTRB(20, 20, 20, 0),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey,
+                width: 1.0
+              )
+            )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                height: 30,
+                child: Text(
+                  'Starts*',
+                  style: TextStyle(color: Color.fromRGBO(117, 117, 141, 1), fontSize: 16)
+                ),
+              ),
+              Container(
+                height: 30,
+                child: isStartSelected ? Text('${pickedStartDate.year} ${pickedStartDate.month} ${pickedStartDate.day}') : Text('Select')
+              )
+            ],
+          ),
         ),
-        onPressed: pickDate,
       ),
       visible: isVisible,
     );
@@ -57,24 +87,72 @@ class _TimeAndDateWidgetState extends State<TimeAndDateWidget> {
 
   Widget _buildEnd() {
     return Visibility(
-      child: RaisedButton(
-        color: Colors.white,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Ends',
-              style: TextStyle(color: Color.fromRGBO(117, 117, 141, 1), fontSize: 16)
-            ),
-            pickedDate != null ? Text('${pickedDate.year} ${pickedDate.month} ${pickedDate.day}') : Text('Select')
-          ],
+      child: GestureDetector(
+        onTap: () { pickDate(false); },
+        child: Container(
+          margin:EdgeInsets.fromLTRB(20, 20, 20, 0),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey,
+                width: 1.0
+              )
+            )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                height: 30,
+                child: Text(
+                  'Ends',
+                  style: TextStyle(color: Color.fromRGBO(117, 117, 141, 1), fontSize: 16)
+                ),
+              ),
+              Container(
+                height: 30,
+                child: isStartSelected ? Text('${pickedStartDate.year} ${pickedStartDate.month} ${pickedStartDate.day}') : Text('Select')
+              )
+            ],
+          ),
         ),
-        onPressed: pickDate,
       ),
       visible: isVisible,
     );
   }
+
+  Widget _buildFrequency() {
+    return Visibility(
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 20),
+        child: DropdownButton(
+          isExpanded: true,
+          value: _frequency,
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: Colors.black,
+            textDirection: TextDirection.rtl,
+          ),
+          iconSize: 24,
+          elevation: 16,
+          items: frequencies.map((String val) {
+            return DropdownMenuItem<String>(
+              value: val,
+              child: new Text(val),
+            );
+          }).toList(),
+          onChanged: (String newVal) {
+            setState(() {
+              _frequency = newVal;
+            });
+          },
+        ),
+      ),
+      visible: isVisible,
+    );
+  }
+
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -107,7 +185,8 @@ class _TimeAndDateWidgetState extends State<TimeAndDateWidget> {
           },
         ),
         _buildStart(),
-        _buildEnd()
+        _buildEnd(),
+        _buildFrequency(),
       ],
     );
   }

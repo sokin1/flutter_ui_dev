@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class PerfWidget extends StatefulWidget {
   PerfWidget({Key key}) : super(key: key);
@@ -11,12 +13,23 @@ class _PerfWidgetState extends State<PerfWidget> {
   bool isVisible = false;
   bool isExpanded = false;
 
+  Future<File> imageFile;
+
+  pickImageFromGallery(ImageSource source) {
+    setState(() {
+      imageFile = ImagePicker.pickImage(source: source);
+    });
+  }
+
   Widget _buildNameOfPerformer() {
     return Visibility(
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Name of the performer',
-          suffixIcon: Icon(Icons.clear),
+      child: Container(
+        margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        child: TextFormField(
+          decoration: InputDecoration(
+            labelText: 'Name of the performer',
+            suffixIcon: Icon(Icons.clear),
+          ),
         ),
       ),
       visible: isVisible,
@@ -25,10 +38,49 @@ class _PerfWidgetState extends State<PerfWidget> {
 
   Widget _buildAvatar() {
     return Visibility(
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Avatar of the performer',
-          suffixIcon: Icon(Icons.camera),
+      child: Container(
+        margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.grey,
+              width: 1.0
+            )
+          )
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Container(
+              child: Text('Avatar of the performer'),
+            ),
+            Container(
+              width: 50,
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child: FutureBuilder<File>(
+                future: imageFile,
+                builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+                  if(snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
+                    return GestureDetector(
+                      onTap: () {
+                        pickImageFromGallery(ImageSource.gallery);
+                      },
+                      child: Image.file(
+                        snapshot.data,
+                      ),
+                    );
+                  } else {
+                    return GestureDetector(
+                      onTap: () {
+                        pickImageFromGallery(ImageSource.gallery);
+                      },
+                      child: Icon(Icons.camera)
+                    );
+                  }
+                }
+              )
+            )
+          ],
         ),
       ),
       visible: isVisible,

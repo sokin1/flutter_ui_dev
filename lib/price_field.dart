@@ -21,13 +21,52 @@ class _PriceWidgetState extends State<PriceWidget> {
 
   Widget _buildSwitch() {
     return Visibility(
-      child: Switch(
-        value: isTicketTab,
-        onChanged: (_) {
-          setState(() {
-            isTicketTab = !isTicketTab;
-          });
-        },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: isTicketTab ? Colors.pinkAccent : Colors.grey,
+                    width: 3.0
+                  )
+                )
+              ),
+              child: FlatButton(
+                onPressed: () {
+                  setState(() {
+                    isTicketTab = true;
+                  });
+                },
+                child: Text('Ticket')
+              )
+            ),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(   
+                    color: isTicketTab ? Colors.grey : Colors.pinkAccent,
+                    width: 3.0
+                  )
+                )
+              ),
+              child: FlatButton(
+                onPressed: () {
+                  setState(() {
+                    isTicketTab = false;
+                  });
+                },
+                child: Text('Promo')
+              ),
+            ),
+          ),
+        ],
       ),
       visible: isVisible,
     );
@@ -36,9 +75,12 @@ class _PriceWidgetState extends State<PriceWidget> {
   Widget _buildFreeEvent() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text('Free event'),
+        Container(
+          alignment: Alignment.center,
+          child: Text('Free event')
+        ),
         Switch(
           value: isFreeEvent,
           onChanged: (_) {
@@ -54,9 +96,12 @@ class _PriceWidgetState extends State<PriceWidget> {
   Widget _buildUnlimitedNumberOfTickets() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text('Unlimited number of tickets'),
+        Container(
+          alignment: Alignment.center,
+          child: Text('Unlimited number of tickets'),
+        ),
         Switch(
           value: isUnlimitedNumberOfTickets,
           onChanged: (_) {
@@ -133,7 +178,10 @@ class _PriceWidgetState extends State<PriceWidget> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text('Unlimited number of codes', ),
+        Container(
+          alignment: Alignment.center,
+          child: Text('Unlimited number of codes'),
+        ),
         Switch(
           value: isUnlimitedNumberOfCodes,
           onChanged: (_) {
@@ -218,6 +266,7 @@ class _PriceWidgetState extends State<PriceWidget> {
             });
           },
         ),
+        SizedBox(height: 10),
         _buildSwitch(),
         _buildTicketTab(),
         _buildPromoTab(),
